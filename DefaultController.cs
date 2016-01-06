@@ -141,7 +141,9 @@ namespace CruiseControl.Core.Triggers
 
             string pusher = content.pusher.name.ToString();
             Log($"Received push event from {pusher}");
-            this.trigger.PushedBy = pusher;
+
+            if (content.@ref.ToString().EndsWith("/" + this.trigger.Branch))
+                this.trigger.PushedBy = pusher;
 
             return await Task.FromResult(Request.CreateResponse(System.Net.HttpStatusCode.OK));
         }

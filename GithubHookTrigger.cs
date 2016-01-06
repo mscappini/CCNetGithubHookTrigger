@@ -25,6 +25,8 @@ namespace CruiseControl.Core.Triggers
 
                 if (string.IsNullOrEmpty(this.EndPoint))
                     this.EndPoint = DefaultEndPoint;
+                if (string.IsNullOrEmpty(this.Branch))
+                    this.Branch = "master";
 
                 Log("Starting OWIN on " + this.EndPoint);
 
@@ -94,6 +96,11 @@ namespace CruiseControl.Core.Triggers
             Description = @"The secret matching the secret defined on Github.",
             Required = false)]
         public string Secret { get; set; }
+
+        [ReflectorProperty("branch",
+            Description = @"The branch that causes the trigger to fire.",
+            Required = false)]
+        public string Branch { get; set; }
 
         /// <summary>
         /// This is the only information we need for triggering a build. We can just use this to determine if a build should be made.

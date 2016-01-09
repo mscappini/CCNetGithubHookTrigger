@@ -56,6 +56,19 @@ A CCNet trigger plugin created to respond to Github's web hooks. (Currently only
 </configuration>
 ```
 
+## SSL
+To configure for SSL, you must use the `netsh` utility (`netsh` is Win7+, previous versions used `httpcfg`.) Explicit configuration for SSL is beyond the scope of this document, but I will include a quick line and example for reference.
+
+Reference:
+
+	netsh http add sslcert ipport=0.0.0.0:31574 certhash=<selected SSL thumbprint> appid={<guid>}
+
+Example:
+
+	netsh http add sslcert ipport=0.0.0.0:31574 certhash=1a5d02a4ea3623a99defe789fe3fa35fa9af5523b appid={df97eab5-1aba-4069-b364-825799f129a0}
+
+Configure `githubHookTrigger` `endpoint` attribute to be `https://+:31574/`.
+
 # License
 
 GithubHookTrigger is under the MIT license.

@@ -18,7 +18,7 @@ A CCNet trigger plugin created to respond to Github's web hooks. (Currently only
 - `endpoint`: A valid listening endpoint (e.g. `http://*:31574`).
 - `logfile`: A path to a logfile (enables logging). (e.g. `C:\CCNet\logs\githubHookTrigger.log`).
 - `secret`: A secret configured exactly as in Github.
-- `branches`: An array of branches to trigger the build.
+- `branches`: An array of branches to trigger the build. Supports regular expression matching.
 - `buildCondition`: The build condition to return to the integrator. (See [build conditions](http://cruisecontrolnet.org/projects/ccnet/wiki/Build_Condition).)
 
 ## Examples
@@ -37,6 +37,7 @@ A CCNet trigger plugin created to respond to Github's web hooks. (Currently only
     <branches>
       <string>master</string>
       <string>develop</string>
+      <string>(?&lt;version&gt;((\d+)((\.\d+)?){1,}))</string>
     </branches>
   </githubHookTrigger>
 </triggers>

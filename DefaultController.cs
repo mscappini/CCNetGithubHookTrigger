@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web.Http;
 
@@ -140,17 +141,22 @@ namespace CruiseControl.Core.Triggers
             dynamic content = payload;
 
             string pusher = content.pusher.name.ToString();
-            Log($"Received push event from {pusher}");
-
             string[] refParts = content.@ref.ToString().Split('/');
+            string branch = refParts[refParts.Length - 1];
 
-            if (this.trigger.Branches.Contains(refParts[refParts.Length - 1], StringComparer.OrdinalIgnoreCase))
+            Log($"Received push event to {branch} from {pusher}");
+
+            foreach (string branchPattern in this.trigger.Branches)
             {
-                this.trigger.PushData = new PushData()
+                MatchCollection matches = Regex.Matches(branch, branchPattern);
+                if (matches.Count > 0 && matches[0].Value == branch)
                 {
-                    PushedBy = pusher,
-                    Branch = refParts[refParts.Length - 1]
-                };
+                    this.trigger.PushData = new PushData()
+                    {
+                        PushedBy = pusher,
+                        Branch = branch
+                    };
+                }
             }
 
             return await Task.FromResult(Request.CreateResponse(System.Net.HttpStatusCode.OK));

@@ -7,6 +7,7 @@ A CCNet trigger plugin created to respond to Github's web hooks. (Currently only
 - Listens on port `31574` 
 - Does not log any information
 - `master` branch triggers build
+- Build condition is `IfModificationExists`
 
 ## ccnet.config
 
@@ -17,7 +18,8 @@ A CCNet trigger plugin created to respond to Github's web hooks. (Currently only
 - `endpoint`: A valid listening endpoint (e.g. `http://*:31574`).
 - `logfile`: A path to a logfile (enables logging). (e.g. `C:\CCNet\logs\githubHookTrigger.log`).
 - `secret`: A secret configured exactly as in Github.
-- `branch`: The branch to trigger the build.
+- `branches`: An array of branches to trigger the build.
+- `buildCondition`: The build condition to return to the integrator. (See [build conditions](http://cruisecontrolnet.org/projects/ccnet/wiki/Build_Condition).)
 
 ## Examples
 ```
@@ -31,9 +33,17 @@ A CCNet trigger plugin created to respond to Github's web hooks. (Currently only
   <githubHookTrigger endpoint="http://58.96.46.38:5432"
                      logfile="C:\CCNet\Logs\githubHookTriggerLog.txt"
                      secret="foobar"
-                     branch="develop"/>
+                     buildCondition="ForceBuild">
+    <branches>
+      <string>master</string>
+      <string>develop</string>
+    </branches>
+  </githubHookTrigger>
 </triggers>
 ```
+
+## Integration
+The Github Hook Trigger provides a dynamic value named `Branch` that is the name of the branch provided in the `ref` element of the push notification. This value can be used as a dynamic value later in the build process.
 
 ## Caveats
 - As far as I know, this plugin will not load in a stable release of CCNet <= **1.8.5.0** (the latest stable release at the time of writing). I tested this plugin with CCNet nightly build **1.9.70.0**. The stable releases were built with .NET 2.0 and cannot load a .NET 4.5 plugin (the version this plugin was built with). The nightlies are built with .NET 4.5.

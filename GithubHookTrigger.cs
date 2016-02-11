@@ -17,6 +17,11 @@ namespace CruiseControl.Core.Triggers
 
         private IDisposable webApp;
 
+        public GithubHookTrigger()
+        {
+            this.BuildCondition = BuildCondition.IfModificationExists;
+        }
+
         public IntegrationRequest Fire()
         {
             if (!started)
@@ -25,8 +30,8 @@ namespace CruiseControl.Core.Triggers
 
                 if (string.IsNullOrEmpty(this.EndPoint))
                     this.EndPoint = DefaultEndPoint;
-                if (string.IsNullOrEmpty(this.Branch))
-                    this.Branch = "master";
+                if (this.Branches == null || this.Branches.Length == 0)
+                    this.Branches = new string[] { "master" };
 
                 Log("Starting OWIN on " + this.EndPoint);
 
@@ -35,11 +40,12 @@ namespace CruiseControl.Core.Triggers
                 Log("Started OWIN on " + this.EndPoint);
             }
 
-            if (!string.IsNullOrWhiteSpace(this.PushedBy))
+            if (this.PushData != null)
             {
-                string pushedBy = this.PushedBy;
-                this.PushedBy = null;
-                return new IntegrationRequest(BuildCondition.ForceBuild, this.GetType().Name, pushedBy);
+                IntegrationRequest req = new IntegrationRequest(this.BuildCondition, this.GetType().Name, this.PushData.PushedBy);
+                req.BuildValues["Branch"] = this.PushData.Branch;
+                this.PushData = null;
+                return req;
             }
             return null;
         }
@@ -97,14 +103,19 @@ namespace CruiseControl.Core.Triggers
             Required = false)]
         public string Secret { get; set; }
 
-        [ReflectorProperty("branch",
-            Description = @"The branch that causes the trigger to fire.",
+        [ReflectorProperty("branches",
+            Description = @"The branches that cause the trigger to fire.",
             Required = false)]
-        public string Branch { get; set; }
+        public string[] Branches { get; set; }
+
+        [ReflectorProperty("buildCondition",
+            Description = "",
+            Required = false)]
+        public BuildCondition BuildCondition { get; set; }
 
         /// <summary>
-        /// This is the only information we need for triggering a build. We can just use this to determine if a build should be made.
+        /// Info about the push notification.
         /// </summary>
-        public string PushedBy { get; set; }
+        internal PushData PushData { get; set; }
     }
 }

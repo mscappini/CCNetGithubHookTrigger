@@ -67,6 +67,8 @@ The Github Hook Trigger provides a dynamic value named `Branch` that is the name
 </configuration>
 ```
 
+- If you make changes to the `ccnet.config` file and save, the service will attempt to restart with a new trigger instance. But since the trigger has no way to know that it was unloaded, the OWIN service continues to run. While the old instance continues to run, the new trigger will attempt to start a new OWIN instance on the same port and you will receive an error in the Event Viewer. Simply restart the service to get the ball rolling properly again.
+
 ## SSL
 To configure for SSL, you must use the `netsh` utility (`netsh` is Win7+, previous versions used `httpcfg`.) Explicit configuration for SSL is beyond the scope of this document, but I will include a quick line and example for reference.
 
